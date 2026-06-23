@@ -47,7 +47,7 @@
     display:flex;align-items:center;gap:8px}
   .card h2 .n{font-family:var(--mono);color:var(--accent);font-size:.78rem}
 
-  /* ---- LIST VIEW ---- */
+  /* LIST */
   .seg{display:flex;gap:6px;background:var(--surface);border:1px solid var(--line);
     border-radius:12px;padding:5px;margin-bottom:16px}
   .seg button{flex:1;min-height:42px;border:none;border-radius:8px;background:transparent;
@@ -71,9 +71,9 @@
     margin-top:2px;display:grid;place-items:center;font-size:.8rem;color:var(--accent-ink)}
   .entry.sel .chk{background:var(--ok);border-color:var(--ok)}
   .entry .body{flex:1;min-width:0}
-  .entry .name{font-weight:600;font-size:1rem;margin-bottom:3px;
-    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .entry .meta{font-size:.76rem;color:var(--ink-dim);font-family:var(--mono);
+  .entry .name{font-weight:600;font-size:.95rem;margin-bottom:3px;
+    word-break:break-all;line-height:1.3}
+  .entry .meta{font-size:.74rem;color:var(--ink-dim);font-family:var(--mono);
     display:flex;flex-wrap:wrap;gap:4px 12px}
   .entry .meta b{color:var(--ink);font-weight:600}
   .entry .tag{position:absolute;top:13px;right:14px;font-family:var(--mono);
@@ -81,8 +81,6 @@
     border-radius:20px}
   .tag.open{background:rgba(255,210,61,.16);color:var(--warn)}
   .tag.ready{background:rgba(61,220,132,.16);color:var(--ok)}
-  .entry .thumb{flex:none;width:46px;height:46px;border-radius:9px;object-fit:cover;
-    border:1px solid var(--line)}
   .entry .pcount{position:absolute;bottom:11px;right:14px;font-family:var(--mono);
     font-size:.62rem;color:var(--ink-dim)}
 
@@ -106,31 +104,15 @@
   .bulkbar .send{background:var(--ok);color:#06301a}
   .bulkbar .clear{background:var(--surface-2);color:var(--ink-dim)}
 
-  /* ---- CAPTURE VIEW ---- */
-  .shots{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  .shot{position:relative;aspect-ratio:4/3;border-radius:12px;overflow:hidden;
-    border:1.5px dashed var(--line);background:var(--surface-2);
-    display:grid;place-items:center;cursor:pointer;text-align:center}
-  .shot.primary{border-style:solid;border-color:var(--accent)}
-  .shot input{position:absolute;inset:0;opacity:0;cursor:pointer}
-  .shot .ph{display:flex;flex-direction:column;align-items:center;gap:6px;
-    padding:10px;pointer-events:none}
-  .shot .ph .ic{font-size:1.7rem}
-  .shot .ph .lbl{font-size:.78rem;color:var(--ink-dim);line-height:1.2}
-  .shot .ph .req{font-family:var(--mono);font-size:.6rem;letter-spacing:.1em;
-    color:var(--accent);text-transform:uppercase}
-  .shot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-  .shot .redo{position:absolute;bottom:6px;right:6px;background:rgba(0,0,0,.7);
-    color:#fff;font-size:.66rem;padding:4px 8px;border-radius:7px;
-    font-family:var(--mono);pointer-events:none}
-
-  /* beilage multi-photo strip */
-  .strip-label{font-size:.74rem;color:var(--ink-dim);margin:16px 0 8px;
+  /* CAPTURE */
+  .strip-label{font-size:.74rem;color:var(--ink-dim);margin:0 0 8px;
     font-family:var(--mono);letter-spacing:.04em;text-transform:uppercase;
     display:flex;justify-content:space-between;align-items:baseline}
+  .strip-label.mt{margin-top:18px}
   .strip{display:flex;gap:10px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch}
   .strip .pic{position:relative;flex:none;width:84px;height:84px;border-radius:11px;
     overflow:hidden;border:1px solid var(--line)}
+  .strip .pic.doc{border-color:var(--accent);border-width:1.5px}
   .strip .pic img{width:100%;height:100%;object-fit:cover}
   .strip .pic .del{position:absolute;top:3px;right:3px;width:22px;height:22px;
     background:rgba(0,0,0,.72);color:#fff;border:none;border-radius:50%;font-size:.85rem;
@@ -138,12 +120,14 @@
   .strip .add{flex:none;width:84px;height:84px;border-radius:11px;border:1.5px dashed var(--line);
     background:var(--surface-2);display:grid;place-items:center;cursor:pointer;position:relative;
     color:var(--ink-dim)}
+  .strip .add.primary{border-color:var(--accent)}
   .strip .add.full{opacity:.35;pointer-events:none}
   .strip .add input{position:absolute;inset:0;opacity:0;cursor:pointer}
   .strip .add .plus{font-size:1.5rem;pointer-events:none}
-  .strip .add .sub{font-size:.58rem;font-family:var(--mono);pointer-events:none;margin-top:-2px}
+  .strip .add .sub{font-size:.56rem;font-family:var(--mono);pointer-events:none;
+    margin-top:-2px;text-align:center;padding:0 4px}
 
-  .scan-btn{width:100%;min-height:var(--tap);margin-top:14px;border:none;
+  .scan-btn{width:100%;min-height:var(--tap);margin-top:16px;border:none;
     border-radius:12px;background:var(--accent);color:var(--accent-ink);
     font-size:.95rem;font-weight:700;letter-spacing:.02em;cursor:pointer;
     display:flex;align-items:center;justify-content:center;gap:8px}
@@ -154,12 +138,14 @@
     border-radius:50%;animation:sp .7s linear infinite}
   @keyframes sp{to{transform:rotate(360deg)}}
 
-  .field{margin-bottom:13px}
-  .field:last-child{margin-bottom:0}
+  /* filename builder */
+  .fn-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .fn-grid .full{grid-column:1 / -1}
+  .field{margin-bottom:0}
   .field label{display:flex;justify-content:space-between;align-items:baseline;
-    font-size:.74rem;color:var(--ink-dim);margin-bottom:5px;
+    font-size:.7rem;color:var(--ink-dim);margin-bottom:5px;
     font-family:var(--mono);letter-spacing:.04em;text-transform:uppercase}
-  .field label .src{font-size:.6rem;padding:1px 7px;border-radius:20px}
+  .field label .src{font-size:.58rem;padding:1px 6px;border-radius:20px}
   .src.ai{background:rgba(61,220,132,.14);color:var(--ok)}
   .src.manual{background:rgba(255,122,61,.16);color:var(--accent)}
   .src.miss{background:rgba(255,210,61,.16);color:var(--warn)}
@@ -168,8 +154,15 @@
     padding:12px 14px;font-size:1rem;font-family:var(--sans)}
   .field input:focus,.field textarea:focus{outline:none;border-color:var(--accent)}
   .field textarea{min-height:64px;resize:vertical;line-height:1.4}
-  .field input.flag{border-color:var(--warn)}
   .field input.weight{border-color:var(--warn);background:rgba(255,210,61,.06)}
+
+  .fn-preview{margin-top:14px;background:var(--surface-2);border:1px solid var(--line);
+    border-radius:11px;padding:12px 14px}
+  .fn-preview .lbl{font-size:.66rem;font-family:var(--mono);color:var(--ink-dim);
+    letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px}
+  .fn-preview .val{font-family:var(--mono);font-size:.92rem;color:var(--accent);
+    word-break:break-all;line-height:1.4}
+  .fn-preview .val .pdf{color:var(--ink-dim)}
 
   .actions{display:flex;flex-direction:column;gap:10px}
   .btn{width:100%;min-height:56px;border:none;border-radius:13px;font-size:.98rem;
@@ -182,6 +175,15 @@
   .btn.ghost{background:var(--surface-2);color:var(--ink-dim);min-height:46px;font-size:.86rem}
   .hint{text-align:center;font-size:.72rem;color:var(--ink-dim);margin-top:2px}
 
+  /* recipient checkboxes */
+  .recip{display:flex;flex-direction:column;gap:8px;margin-top:4px}
+  .recip label{display:flex;align-items:center;gap:11px;background:var(--surface-2);
+    border:1px solid var(--line);border-radius:11px;padding:12px 14px;cursor:pointer;
+    font-size:.9rem;word-break:break-all}
+  .recip input{width:20px;height:20px;flex:none;accent-color:var(--ok)}
+  .recip .none{color:var(--ink-dim);font-size:.8rem;text-align:center;padding:8px}
+
+  /* sheet */
   .sheet-bg{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:50;
     opacity:0;pointer-events:none;transition:opacity .2s}
   .sheet-bg.on{opacity:1;pointer-events:auto}
@@ -189,7 +191,7 @@
     background:var(--surface);border-radius:18px 18px 0 0;border-top:1px solid var(--line);
     padding:8px 18px calc(env(safe-area-inset-bottom) + 22px);
     transform:translateY(100%);transition:transform .26s cubic-bezier(.2,.7,.3,1);
-    max-height:88dvh;overflow-y:auto}
+    max-height:90dvh;overflow-y:auto}
   .sheet.on{transform:translateY(0)}
   .grab{width:38px;height:4px;background:var(--line);border-radius:4px;margin:8px auto 16px}
   .sheet h3{margin:0 0 4px;font-size:1rem}
@@ -197,6 +199,14 @@
   .sheet .save-set{width:100%;min-height:var(--tap);border:none;border-radius:11px;
     background:var(--accent);color:var(--accent-ink);font-weight:700;font-size:.92rem;
     margin-top:8px;cursor:pointer}
+  .maillist{display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
+  .mailrow{display:flex;gap:8px;align-items:center}
+  .mailrow input{flex:1;min-height:46px;background:var(--surface-2);border:1px solid var(--line);
+    border-radius:10px;color:var(--ink);padding:10px 12px;font-size:.92rem}
+  .mailrow .rm{width:40px;min-height:46px;border:1px solid var(--line);border-radius:10px;
+    background:var(--surface-2);color:var(--danger);font-size:1.1rem;cursor:pointer;flex:none}
+  .addmail{width:100%;min-height:44px;border:1px dashed var(--line);border-radius:10px;
+    background:transparent;color:var(--ink-dim);font-size:.85rem;cursor:pointer;margin-bottom:6px}
 
   .toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 84px);
     transform:translateX(-50%) translateY(20px);background:var(--surface-2);
@@ -221,7 +231,7 @@
   <button class="gear" id="gearBtn" aria-label="Einstellungen">⚙</button>
 </header>
 
-<!-- ============ LIST VIEW ============ -->
+<!-- LIST -->
 <main id="listView">
   <div class="seg">
     <button data-tab="open" class="on">Offen <span class="badge" id="cnt-open">0</span></button>
@@ -239,29 +249,30 @@
 <div class="bulkbar" id="bulkbar">
   <span class="cnt"><b id="bulkCount">0</b> ausgewählt</span>
   <button class="clear" id="bulkClear">Abwählen</button>
-  <button class="send" id="bulkSend">✉ Sammel-Mail</button>
+  <button class="send" id="bulkSend">✉ Senden</button>
 </div>
 
-<!-- ============ CAPTURE / EDIT VIEW ============ -->
+<!-- CAPTURE / EDIT -->
 <main id="captureView" class="hidden">
   <section class="card">
-    <h2><span class="n">01</span> Fotos</h2>
-    <div class="shots">
-      <label class="shot primary" id="shotDoc">
-        <input type="file" accept="image/*" capture="environment" data-slot="doc">
-        <div class="ph"><span class="ic">📄</span><span class="lbl">Lieferschein /<br>Palettenzettel</span><span class="req">für Erkennung</span></div>
-      </label>
-      <label class="shot" id="shotPallet">
-        <input type="file" accept="image/*" capture="environment" data-slot="pallet">
-        <div class="ph"><span class="ic">📦</span><span class="lbl">Palette +<br>Beilage</span><span class="req" style="color:var(--ink-dim)">optional</span></div>
-      </label>
-    </div>
-
+    <h2><span class="n">01</span> Lieferschein / Palettenzettel</h2>
     <div class="strip-label">
+      <span>Fotos zum Auslesen</span>
+      <span id="docCount" style="color:var(--ink-dim)">0</span>
+    </div>
+    <div class="strip" id="docStrip"></div>
+
+    <div class="strip-label mt">
       <span>Beilage – Fotos</span>
       <span id="beilageCount" style="color:var(--ink-dim)">0 / 3</span>
     </div>
     <div class="strip" id="beilageStrip"></div>
+
+    <div class="strip-label mt">
+      <span>Palette (optional)</span>
+      <span id="palletCount" style="color:var(--ink-dim)">0 / 2</span>
+    </div>
+    <div class="strip" id="palletStrip"></div>
 
     <button class="scan-btn" id="scanBtn" disabled>
       <span id="scanLabel">Erst Lieferschein fotografieren</span>
@@ -269,61 +280,82 @@
   </section>
 
   <section class="card">
-    <h2><span class="n">02</span> Daten <span style="margin-left:auto;font-weight:400;text-transform:none;letter-spacing:0" id="reviewNote"></span></h2>
-    <div class="field">
-      <label>Name der Beilage <span class="src miss" id="src-beilage">—</span></label>
-      <input id="f-beilage" placeholder="z. B. Netto, Wohnorama …" autocomplete="off">
+    <h2><span class="n">02</span> Benennung <span style="margin-left:auto;font-weight:400;text-transform:none;letter-spacing:0" id="reviewNote"></span></h2>
+    <div class="fn-grid">
+      <div class="field full">
+        <label>Name der Beilage <span class="src miss" id="src-name">—</span></label>
+        <input id="f-name" placeholder="z. B. Netto" autocomplete="off">
+      </div>
+      <div class="field">
+        <label>Version <span class="src miss" id="src-version">—</span></label>
+        <input id="f-version" placeholder="A / Region …" autocomplete="off">
+      </div>
+      <div class="field">
+        <label>Stückzahl <span class="src miss" id="src-stueckzahl">—</span></label>
+        <input id="f-stueckzahl" inputmode="numeric" placeholder="gesamt" autocomplete="off">
+      </div>
+      <div class="field">
+        <label>ET <span class="src miss" id="src-et">—</span></label>
+        <input id="f-et" placeholder="Termin" autocomplete="off">
+      </div>
+      <div class="field">
+        <label>Zeitung <span class="src miss" id="src-zeitung">—</span></label>
+        <input id="f-zeitung" placeholder="MK, FZ …" autocomplete="off">
+      </div>
     </div>
-    <div class="field">
-      <label>Auflage gesamt (alle Paletten) <span class="src miss" id="src-auflage">—</span></label>
-      <input id="f-auflage" inputmode="numeric" placeholder="kombinierte Stückzahl" autocomplete="off">
-    </div>
-    <div class="field">
-      <label>Versions-/Ausgabe-Merkmal <span class="src miss" id="src-version">—</span></label>
-      <input id="f-version" placeholder="Variante / Region / Code" autocomplete="off">
-    </div>
-    <div class="field">
-      <label>ET – Erscheinungstermin <span class="src miss" id="src-et">—</span></label>
-      <input id="f-et" placeholder="falls erkennbar" autocomplete="off">
-    </div>
-    <div class="field">
-      <label>Lagerplatz <span class="src manual">manuell</span></label>
-      <input id="f-lager" placeholder="z. B. A-12" autocomplete="off">
-    </div>
-    <div class="field">
-      <label>Gewicht <span class="src miss" id="src-gewicht">kommt später</span></label>
-      <input id="f-gewicht" class="weight" inputmode="decimal" placeholder="kg – leer lassen, später nachtragen" autocomplete="off">
-    </div>
-    <div class="field">
-      <label>Notiz <span class="src manual">optional</span></label>
-      <textarea id="f-notiz" placeholder="freier Text …"></textarea>
+    <div class="fn-preview">
+      <div class="lbl">📄 Dateiname der PDF</div>
+      <div class="val" id="fnPreview">—<span class="pdf">.pdf</span></div>
     </div>
   </section>
 
   <section class="card">
-    <h2><span class="n">03</span> Speichern</h2>
+    <h2><span class="n">03</span> Ergänzen</h2>
+    <div class="field" style="margin-bottom:13px">
+      <label>Gewicht <span class="src miss" id="src-gewicht">kommt später</span></label>
+      <input id="f-gewicht" class="weight" inputmode="decimal" placeholder="kg – leer lassen, später nachtragen" autocomplete="off">
+    </div>
+    <div class="field">
+      <label>Bemerkung <span class="src manual">optional</span></label>
+      <textarea id="f-notiz" placeholder="Bemerkung zur Beilage …"></textarea>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2><span class="n">04</span> Speichern &amp; Senden</h2>
     <div class="actions">
       <button class="btn save" id="saveBtn"><span>💾</span><span id="saveLabel">In Liste speichern</span></button>
-      <button class="btn send hidden" id="saveSendBtn"><span>✉</span><span>Speichern & sofort senden</span></button>
+      <button class="btn send hidden" id="saveSendBtn"><span>✉</span><span>Speichern &amp; senden</span></button>
       <button class="btn ghost hidden" id="deleteBtn">Eintrag löschen</button>
     </div>
     <p class="hint" id="captureHint">Ohne Gewicht landet der Eintrag unter „Offen".</p>
   </section>
 </main>
 
+<!-- SEND SHEET (recipient pick) -->
+<div class="sheet-bg" id="sendBg"></div>
+<div class="sheet" id="sendSheet">
+  <div class="grab"></div>
+  <h3>Senden an</h3>
+  <p>Wähle die Empfänger für diese PDF.</p>
+  <div class="recip" id="recipList"></div>
+  <button class="save-set" id="doSendBtn" style="background:var(--ok);color:#06301a">PDF erzeugen &amp; senden</button>
+</div>
+
 <!-- SETTINGS -->
 <div class="sheet-bg" id="sheetBg"></div>
 <div class="sheet" id="sheet">
   <div class="grab"></div>
   <h3>Einstellungen</h3>
-  <p>Wird auf dem Gerät gespeichert. Einmal eintragen genügt.</p>
-  <div class="field">
-    <label>Empfänger-E-Mail</label>
-    <input id="set-email" type="email" inputmode="email" placeholder="empfaenger@firma.de" autocomplete="off">
+  <p>Wird auf dem Gerät gespeichert.</p>
+  <div class="field" style="margin-bottom:14px">
+    <label>Empfänger-Adressen</label>
+    <div class="maillist" id="mailList"></div>
+    <button class="addmail" id="addMail">＋ Adresse hinzufügen</button>
   </div>
-  <div class="field">
+  <div class="field" style="margin-bottom:14px">
     <label>Betreff-Vorlage</label>
-    <input id="set-subject" placeholder="Wareneingang – {beilage}" autocomplete="off">
+    <input id="set-subject" placeholder="Wareneingang – {name}" autocomplete="off">
   </div>
   <div class="field">
     <label>Worker-URL (Texterkennung)</label>
@@ -334,31 +366,34 @@
 
 <div class="toast" id="toast"></div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
 const $=s=>document.querySelector(s);
 const $$=s=>document.querySelectorAll(s);
-const MAX_BEILAGE=3;
+const MAX_BEILAGE=3, MAX_PALLET=2;
 
 const store={
-  get email(){return localStorage.getItem('pe_email')||''},
-  set email(v){localStorage.setItem('pe_email',v)},
-  get subject(){return localStorage.getItem('pe_subject')||'Wareneingang – {beilage}'},
+  get emails(){try{return JSON.parse(localStorage.getItem('pe_emails')||'[]')}catch{return[]}},
+  set emails(v){localStorage.setItem('pe_emails',JSON.stringify(v))},
+  get subject(){return localStorage.getItem('pe_subject')||'Wareneingang – {name}'},
   set subject(v){localStorage.setItem('pe_subject',v)},
   get worker(){return localStorage.getItem('pe_worker')||''},
   set worker(v){localStorage.setItem('pe_worker',v)},
 };
 
-/* ---------- IndexedDB ---------- */
+/* ---- migrate old single email if present ---- */
+(function migrate(){
+  const old=localStorage.getItem('pe_email');
+  if(old && store.emails.length===0){store.emails=[old];}
+})();
+
+/* ---- IndexedDB ---- */
 let db;
-function openDB(){
-  return new Promise((res,rej)=>{
-    const r=indexedDB.open('paletten',1);
-    r.onupgradeneeded=e=>{const d=e.target.result;
-      if(!d.objectStoreNames.contains('entries'))d.createObjectStore('entries',{keyPath:'id'});};
-    r.onsuccess=e=>{db=e.target.result;res();};
-    r.onerror=e=>rej(e.target.error);
-  });
-}
+function openDB(){return new Promise((res,rej)=>{
+  const r=indexedDB.open('paletten2',1);
+  r.onupgradeneeded=e=>{const d=e.target.result;
+    if(!d.objectStoreNames.contains('entries'))d.createObjectStore('entries',{keyPath:'id'});};
+  r.onsuccess=e=>{db=e.target.result;res();};r.onerror=e=>rej(e.target.error);});}
 function tx(m){return db.transaction('entries',m).objectStore('entries');}
 function dbGetAll(){return new Promise((res,rej)=>{const r=tx('readonly').getAll();
   r.onsuccess=()=>res(r.result||[]);r.onerror=()=>rej(r.error);});}
@@ -369,353 +404,334 @@ function dbDel(id){return new Promise((res,rej)=>{const r=tx('readwrite').delete
 function dbGet(id){return new Promise((res,rej)=>{const r=tx('readonly').get(id);
   r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);});}
 
-/* ---------- state ---------- */
-let currentTab='open';
-let editingId=null;
-let photos={doc:null,pallet:null,beilage:[]}; // beilage = array of dataUrl
+/* ---- state ---- */
+let currentTab='open', editingId=null;
+let photos={doc:[],beilage:[],pallet:[]};
 let selected=new Set();
+let sendContext=null; // {ids:[]} for send sheet
 
 let tT;
 function toast(msg,err){const t=$('#toast');t.textContent=msg;t.classList.toggle('err',!!err);
-  t.classList.add('on');clearTimeout(tT);tT=setTimeout(()=>t.classList.remove('on'),3200);}
+  t.classList.add('on');clearTimeout(tT);tT=setTimeout(()=>t.classList.remove('on'),3400);}
 
-/* ---------- views ---------- */
+/* ---- views ---- */
 function showList(){
-  $('#listView').classList.remove('hidden');
-  $('#captureView').classList.add('hidden');
-  $('#newBtn').classList.remove('hidden');
-  $('#backBtn').classList.add('hidden');
-  $('#hTitle').textContent='Erfassungen';
-  renderList();
-}
+  $('#listView').classList.remove('hidden');$('#captureView').classList.add('hidden');
+  $('#newBtn').classList.remove('hidden');$('#backBtn').classList.add('hidden');
+  $('#hTitle').textContent='Erfassungen';renderList();}
 function showCapture(){
-  $('#listView').classList.add('hidden');
-  $('#captureView').classList.remove('hidden');
-  $('#newBtn').classList.add('hidden');
-  $('#bulkbar').classList.remove('on');
-  $('#backBtn').classList.remove('hidden');
-  window.scrollTo(0,0);
+  $('#listView').classList.add('hidden');$('#captureView').classList.remove('hidden');
+  $('#newBtn').classList.add('hidden');$('#bulkbar').classList.remove('on');
+  $('#backBtn').classList.remove('hidden');window.scrollTo(0,0);}
+
+/* ---- filename builder ---- */
+function buildFilename(d){
+  const parts=[d.name,d.version,d.stueckzahl,d.et,d.zeitung]
+    .map(x=>(x==null?'':String(x).trim()))
+    .filter(x=>x!=='')
+    .map(sanitize);
+  return parts.length?parts.join('_'):'Erfassung';
+}
+function sanitize(s){
+  return s.replace(/[\/\\:*?"<>|]/g,'').replace(/\s+/g,'-').replace(/_+/g,'-');
+}
+function refreshFilename(){
+  const d=collect();
+  $('#fnPreview').innerHTML=esc(buildFilename(d))+'<span class="pdf">.pdf</span>';
 }
 
-/* ---------- list ---------- */
+/* ---- list ---- */
 async function renderList(){
   const all=await dbGetAll();
   const open=all.filter(e=>e.status==='open').sort((a,b)=>b.created-a.created);
   const ready=all.filter(e=>e.status==='ready').sort((a,b)=>b.created-a.created);
-  $('#cnt-open').textContent=open.length;
-  $('#cnt-ready').textContent=ready.length;
+  $('#cnt-open').textContent=open.length;$('#cnt-ready').textContent=ready.length;
   const items=currentTab==='open'?open:ready;
   const list=$('#entryList');list.innerHTML='';
-  if(items.length===0){
-    $('#emptyState').classList.remove('hidden');
+  if(items.length===0){$('#emptyState').classList.remove('hidden');
     $('#emptyText').innerHTML=currentTab==='open'
       ?'Keine offenen Erfassungen.<br>Tippe unten auf „Neu erfassen".'
       :'Nichts versandbereit.<br>Trage bei offenen Einträgen das Gewicht nach.';
   }else $('#emptyState').classList.add('hidden');
-  items.forEach(e=>list.appendChild(entryEl(e)));
-  updateBulkbar();
-}
+  items.forEach(e=>list.appendChild(entryEl(e)));updateBulkbar();}
 function entryEl(e){
-  const el=document.createElement('div');
-  el.className='entry'+(selected.has(e.id)?' sel':'');
+  const el=document.createElement('div');el.className='entry'+(selected.has(e.id)?' sel':'');
   const ready=e.status==='ready';
-  const thumb=e.docThumb?`<img class="thumb" src="${e.docThumb}" alt="">`:'';
+  const np=(e.docFull||[]).length+(e.beilageFull||[]).length+(e.palletFull||[]).length;
   const chk=ready?`<div class="chk">${selected.has(e.id)?'✓':''}</div>`:'';
-  const np=photoCount(e);
-  el.innerHTML=`
-    ${chk}
-    <div class="body">
-      <div class="name">${esc(e.beilage)||'(ohne Beilage)'}</div>
+  el.innerHTML=`${chk}<div class="body">
+      <div class="name">${esc(e.filename||'(unbenannt)')}.pdf</div>
       <div class="meta">
-        ${e.auflage?`<span>Auflage <b>${esc(e.auflage)}</b></span>`:''}
-        ${e.lager?`<span>Platz <b>${esc(e.lager)}</b></span>`:''}
+        ${e.stueckzahl?`<span>Stk <b>${esc(e.stueckzahl)}</b></span>`:''}
         ${ready?`<span>Gewicht <b>${esc(e.gewicht)} kg</b></span>`:`<span style="color:var(--warn)">Gewicht fehlt</span>`}
-      </div>
-    </div>
-    ${thumb}
+      </div></div>
     <span class="tag ${ready?'ready':'open'}">${ready?'bereit':'offen'}</span>
     ${np?`<span class="pcount">📷 ${np}</span>`:''}`;
   el.addEventListener('click',ev=>{
-    if(ready && ev.target.closest('.chk')){toggleSelect(e.id);return;}
-    openEntry(e.id);
-  });
+    if(ready&&ev.target.closest('.chk')){toggleSelect(e.id);return;}openEntry(e.id);});
   if(ready){let lp;
     el.addEventListener('touchstart',()=>{lp=setTimeout(()=>toggleSelect(e.id),450);},{passive:true});
     el.addEventListener('touchend',()=>clearTimeout(lp));
     el.addEventListener('touchmove',()=>clearTimeout(lp));}
-  return el;
-}
-function photoCount(e){
-  return (e.docFull?1:0)+(e.palletFull?1:0)+((e.beilageFull||[]).length);
-}
+  return el;}
 function toggleSelect(id){if(selected.has(id))selected.delete(id);else selected.add(id);renderList();}
-function updateBulkbar(){
-  const bar=$('#bulkbar');
+function updateBulkbar(){const bar=$('#bulkbar');
   if(currentTab==='ready'&&selected.size>0){bar.classList.add('on');$('#bulkCount').textContent=selected.size;}
-  else bar.classList.remove('on');
-}
+  else bar.classList.remove('on');}
 $$('.seg button').forEach(b=>b.addEventListener('click',()=>{
   $$('.seg button').forEach(x=>x.classList.remove('on'));
   b.classList.add('on');currentTab=b.dataset.tab;selected.clear();renderList();}));
 $('#bulkClear').addEventListener('click',()=>{selected.clear();renderList();});
-$('#bulkSend').addEventListener('click',sendBulk);
+$('#bulkSend').addEventListener('click',()=>openSendSheet([...selected]));
 
-/* ---------- open new / existing ---------- */
+/* ---- open entry ---- */
 $('#newBtn').addEventListener('click',()=>openEntry(null));
 $('#backBtn').addEventListener('click',showList);
-
 async function openEntry(id){
-  editingId=id;
-  photos={doc:null,pallet:null,beilage:[]};
-  resetCaptureForm();
+  editingId=id;photos={doc:[],beilage:[],pallet:[]};resetForm();
   if(id){
-    const e=await dbGet(id);
-    if(!e){toast('Eintrag nicht gefunden.',true);return showList();}
-    $('#f-beilage').value=e.beilage||'';
-    $('#f-auflage').value=e.auflage||'';
-    $('#f-version').value=e.version||'';
-    $('#f-et').value=e.et||'';
-    $('#f-lager').value=e.lager||'';
-    $('#f-gewicht').value=e.gewicht||'';
+    const e=await dbGet(id);if(!e){toast('Eintrag nicht gefunden.',true);return showList();}
+    $('#f-name').value=e.name||'';$('#f-version').value=e.version||'';
+    $('#f-stueckzahl').value=e.stueckzahl||'';$('#f-et').value=e.et||'';
+    $('#f-zeitung').value=e.zeitung||'';$('#f-gewicht').value=e.gewicht||'';
     $('#f-notiz').value=e.notiz||'';
-    if(e.docFull){photos.doc=e.docFull;paintShot('doc',e.docFull);}
-    if(e.palletFull){photos.pallet=e.palletFull;paintShot('pallet',e.palletFull);}
+    photos.doc=(e.docFull||[]).slice();
     photos.beilage=(e.beilageFull||[]).slice();
-    $('#hTitle').textContent='Bearbeiten';
-    $('#saveLabel').textContent='Änderungen speichern';
-    $('#deleteBtn').classList.remove('hidden');
-    refreshWeightSrc();
+    photos.pallet=(e.palletFull||[]).slice();
+    $('#hTitle').textContent='Bearbeiten';$('#saveLabel').textContent='Änderungen speichern';
+    $('#deleteBtn').classList.remove('hidden');refreshWeightSrc();
+    ['name','version','stueckzahl','et','zeitung'].forEach(k=>{
+      if($('#f-'+k).value)setSrc(k,'manual','gesetzt');});
   }else{
-    $('#hTitle').textContent='Neu erfassen';
-    $('#saveLabel').textContent='In Liste speichern';
+    $('#hTitle').textContent='Neu erfassen';$('#saveLabel').textContent='In Liste speichern';
     $('#deleteBtn').classList.add('hidden');
   }
-  renderBeilageStrip();
-  refreshScan();refreshSaveButtons();showCapture();
-}
-function resetCaptureForm(){
-  ['beilage','auflage','version','et','lager','gewicht','notiz'].forEach(k=>{
-    const el=$('#f-'+k);el.value='';el.classList.remove('flag');});
-  ['beilage','auflage','version','et'].forEach(k=>setSrc(k,'miss','—'));
-  setSrc('gewicht','miss','kommt später');
-  $('#reviewNote').textContent='';
-  resetShot('doc','📄','Lieferschein /<br>Palettenzettel','für Erkennung','var(--accent)');
-  resetShot('pallet','📦','Palette +<br>Beilage','optional','var(--ink-dim)');
-}
-function resetShot(slot,ic,lbl,req,reqColor){
-  const el=slot==='doc'?$('#shotDoc'):$('#shotPallet');
-  el.querySelectorAll('img,.redo').forEach(n=>n.remove());
-  if(!el.querySelector('.ph')){const ph=document.createElement('div');ph.className='ph';
-    ph.innerHTML=`<span class="ic">${ic}</span><span class="lbl">${lbl}</span><span class="req" style="color:${reqColor}">${req}</span>`;
-    el.appendChild(ph);}
-}
+  renderStrips();refreshScan();refreshSaveButtons();refreshFilename();showCapture();}
+function resetForm(){
+  ['name','version','stueckzahl','et','zeitung','gewicht','notiz'].forEach(k=>$('#f-'+k).value='');
+  ['name','version','stueckzahl','et','zeitung'].forEach(k=>setSrc(k,'miss','—'));
+  setSrc('gewicht','miss','kommt später');$('#reviewNote').textContent='';}
 
-/* ---------- single shots (doc / pallet) ---------- */
-$$('.shot input').forEach(inp=>{
-  inp.addEventListener('change',async e=>{
-    const file=e.target.files[0];if(!file)return;
-    const slot=e.target.dataset.slot;
-    const dataUrl=await downscale(file,1500,.78);
-    photos[slot]=dataUrl;paintShot(slot,dataUrl);refreshScan();
-    e.target.value='';
-  });
-});
-function paintShot(slot,dataUrl){
-  const el=slot==='doc'?$('#shotDoc'):$('#shotPallet');
-  el.querySelector('.ph')?.remove();
-  let img=el.querySelector('img');
-  if(!img){img=document.createElement('img');el.appendChild(img);
-    const r=document.createElement('span');r.className='redo';r.textContent='neu';el.appendChild(r);}
-  img.src=dataUrl;
-}
-
-/* ---------- beilage multi-strip ---------- */
-function renderBeilageStrip(){
-  const strip=$('#beilageStrip');strip.innerHTML='';
-  photos.beilage.forEach((url,i)=>{
-    const pic=document.createElement('div');pic.className='pic';
-    pic.innerHTML=`<img src="${url}" alt=""><button class="del" data-i="${i}">×</button>`;
-    pic.querySelector('.del').addEventListener('click',()=>{
-      photos.beilage.splice(i,1);renderBeilageStrip();});
-    strip.appendChild(pic);
-  });
-  const full=photos.beilage.length>=MAX_BEILAGE;
-  const add=document.createElement('label');
-  add.className='add'+(full?' full':'');
-  add.innerHTML=`<span class="plus">＋</span><span class="sub">Beilage</span>
-    <input type="file" accept="image/*" capture="environment" ${full?'disabled':''}>`;
-  if(!full){
-    add.querySelector('input').addEventListener('change',async e=>{
-      const file=e.target.files[0];if(!file)return;
-      const dataUrl=await downscale(file,1400,.76);
-      photos.beilage.push(dataUrl);renderBeilageStrip();e.target.value='';
-    });
-  }
-  strip.appendChild(add);
+/* ---- photo strips ---- */
+function renderStrips(){
+  renderStrip('doc',$('#docStrip'),Infinity,'📄','Zettel','primary');
+  renderStrip('beilage',$('#beilageStrip'),MAX_BEILAGE,'📦','Beilage','');
+  renderStrip('pallet',$('#palletStrip'),MAX_PALLET,'🗄','Palette','');
+  $('#docCount').textContent=photos.doc.length;
   $('#beilageCount').textContent=`${photos.beilage.length} / ${MAX_BEILAGE}`;
+  $('#palletCount').textContent=`${photos.pallet.length} / ${MAX_PALLET}`;
 }
-
-function refreshScan(){
-  const ok=!!photos.doc;
+function renderStrip(slot,el,max,ic,lbl,cls){
+  el.innerHTML='';
+  photos[slot].forEach((url,i)=>{
+    const pic=document.createElement('div');pic.className='pic'+(slot==='doc'?' doc':'');
+    pic.innerHTML=`<img src="${url}" alt=""><button class="del">×</button>`;
+    pic.querySelector('.del').addEventListener('click',()=>{photos[slot].splice(i,1);renderStrips();refreshScan();});
+    el.appendChild(pic);
+  });
+  const full=photos[slot].length>=max;
+  const add=document.createElement('label');add.className='add'+(cls?' '+cls:'')+(full?' full':'');
+  add.innerHTML=`<span class="plus">＋</span><span class="sub">${lbl}</span>
+    <input type="file" accept="image/*" capture="environment" ${full?'disabled':''}>`;
+  if(!full)add.querySelector('input').addEventListener('change',async e=>{
+    const f=e.target.files[0];if(!f)return;
+    const q=slot==='doc'?.82:.76, dim=slot==='doc'?1600:1400;
+    photos[slot].push(await downscale(f,dim,q));renderStrips();refreshScan();e.target.value='';});
+  el.appendChild(add);
+}
+function refreshScan(){const ok=photos.doc.length>0;
   $('#scanBtn').disabled=!ok;
-  $('#scanLabel').textContent=ok?'📄 Daten aus Foto erkennen':'Erst Lieferschein fotografieren';
-}
-function downscale(file,maxDim,quality){
-  return new Promise(res=>{
-    const img=new Image();const url=URL.createObjectURL(file);
-    img.onload=()=>{let {width:w,height:h}=img;
-      if(Math.max(w,h)>maxDim){const s=maxDim/Math.max(w,h);w=Math.round(w*s);h=Math.round(h*s);}
-      const c=document.createElement('canvas');c.width=w;c.height=h;
-      c.getContext('2d').drawImage(img,0,0,w,h);URL.revokeObjectURL(url);
-      res(c.toDataURL('image/jpeg',quality));};
-    img.src=url;});
-}
-function thumbnail(dataUrl){
-  return new Promise(res=>{const img=new Image();
-    img.onload=()=>{const s=92/Math.max(img.width,img.height);
-      const c=document.createElement('canvas');c.width=img.width*s;c.height=img.height*s;
-      c.getContext('2d').drawImage(img,0,0,c.width,c.height);res(c.toDataURL('image/jpeg',.6));};
-    img.src=dataUrl;});
-}
+  $('#scanLabel').textContent=ok?`📄 Daten erkennen (${photos.doc.length} ${photos.doc.length===1?'Foto':'Fotos'})`:'Erst Lieferschein fotografieren';}
+function downscale(file,maxDim,q){return new Promise(res=>{
+  const img=new Image();const url=URL.createObjectURL(file);
+  img.onload=()=>{let{width:w,height:h}=img;
+    if(Math.max(w,h)>maxDim){const s=maxDim/Math.max(w,h);w=Math.round(w*s);h=Math.round(h*s);}
+    const c=document.createElement('canvas');c.width=w;c.height=h;
+    c.getContext('2d').drawImage(img,0,0,w,h);URL.revokeObjectURL(url);
+    res(c.toDataURL('image/jpeg',q));};img.src=url;});}
 
-/* ---------- OCR ---------- */
+/* ---- OCR ---- */
 $('#scanBtn').addEventListener('click',runScan);
 async function runScan(){
-  if(!photos.doc)return;
+  if(photos.doc.length===0)return;
   if(!store.worker){toast('Erst Worker-URL in ⚙ Einstellungen hinterlegen.',true);return;}
   const btn=$('#scanBtn'),lbl=$('#scanLabel');
-  btn.disabled=true;btn.classList.add('busy');
-  lbl.innerHTML='<span class="spin"></span> Erkenne Daten …';
+  btn.disabled=true;btn.classList.add('busy');lbl.innerHTML='<span class="spin"></span> Erkenne …';
   try{
-    const b64=photos.doc.split(',')[1];
-    const data=await visionExtract(b64);
-    applyResult(data);$('#reviewNote').textContent='– bitte prüfen';
-    toast('Daten erkannt. Bitte gegenprüfen.');
+    const images=photos.doc.map(u=>u.split(',')[1]);
+    const r=await fetch(store.worker,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({images})});
+    if(!r.ok)throw new Error('Worker '+r.status);
+    const d=await r.json();if(d.error)throw new Error(d.error);
+    applyResult(d);$('#reviewNote').textContent='– bitte prüfen';
+    toast('Erkannt. Bitte Dateiname prüfen.');
   }catch(err){console.error(err);toast('Erkennung fehlgeschlagen – manuell ausfüllen.',true);}
-  finally{btn.classList.remove('busy');btn.disabled=false;lbl.textContent='📄 Erneut erkennen';}
-}
-async function visionExtract(b64){
-  const r=await fetch(store.worker,{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({image:b64})});
-  if(!r.ok)throw new Error('Worker '+r.status);
-  const j=await r.json();if(j.error)throw new Error(j.error);return j;
+  finally{btn.classList.remove('busy');btn.disabled=false;
+    lbl.textContent=`📄 Erneut erkennen (${photos.doc.length})`;}
 }
 function applyResult(d){
-  const map={beilage:'#f-beilage',auflage:'#f-auflage',version:'#f-version',et:'#f-et'};
-  for(const k in map){const v=d[k];const inp=$(map[k]);
-    if(v!==null&&v!==undefined&&String(v).trim()!==''){
-      inp.value=String(v).trim();inp.classList.remove('flag');setSrc(k,'ai','KI');}
-    else{inp.classList.add('flag');setSrc(k,'miss','prüfen');}}
-}
+  const map={name:'name',version:'version',stueckzahl:'stueckzahl',et:'et',zeitung:'zeitung'};
+  for(const k in map){const v=d[k];const inp=$('#f-'+k);
+    if(v!=null&&String(v).trim()!==''){inp.value=String(v).trim();setSrc(k,'ai','KI');}
+    else setSrc(k,'miss','prüfen');}
+  refreshFilename();}
 function setSrc(k,cls,txt){const el=$('#src-'+k);el.className='src '+cls;el.textContent=txt;}
-['beilage','auflage','version','et'].forEach(k=>{
-  $('#f-'+k).addEventListener('input',()=>{$('#f-'+k).classList.remove('flag');
-    const el=$('#src-'+k);if(!el.classList.contains('ai'))setSrc(k,'manual','manuell');});
-});
+['name','version','stueckzahl','et','zeitung'].forEach(k=>{
+  $('#f-'+k).addEventListener('input',()=>{
+    const el=$('#src-'+k);if(!el.classList.contains('ai'))setSrc(k,'manual','manuell');
+    refreshFilename();});});
 $('#f-gewicht').addEventListener('input',()=>{refreshWeightSrc();refreshSaveButtons();});
-function refreshWeightSrc(){
-  const has=$('#f-gewicht').value.trim()!=='';
+function refreshWeightSrc(){const has=$('#f-gewicht').value.trim()!=='';
   $('#f-gewicht').classList.toggle('weight',!has);
   $('#src-gewicht').className='src '+(has?'manual':'miss');
-  $('#src-gewicht').textContent=has?'gesetzt':'kommt später';
-}
-function refreshSaveButtons(){
-  const hasWeight=$('#f-gewicht').value.trim()!=='';
-  $('#saveSendBtn').classList.toggle('hidden',!hasWeight);
-  $('#captureHint').textContent=hasWeight
-    ?'Mit Gewicht → „Versandbereit" oder direkt senden.'
-    :'Ohne Gewicht landet der Eintrag unter „Offen".';
-}
+  $('#src-gewicht').textContent=has?'gesetzt':'kommt später';}
+function refreshSaveButtons(){const has=$('#f-gewicht').value.trim()!=='';
+  $('#saveSendBtn').classList.toggle('hidden',!has);
+  $('#captureHint').textContent=has?'Mit Gewicht → „Versandbereit" oder direkt senden.'
+    :'Ohne Gewicht landet der Eintrag unter „Offen".';}
 
-/* ---------- save ---------- */
+/* ---- save ---- */
 function collect(){const g=id=>$(id).value.trim();
-  return {beilage:g('#f-beilage'),auflage:g('#f-auflage'),version:g('#f-version'),
-    et:g('#f-et'),lager:g('#f-lager'),gewicht:g('#f-gewicht'),notiz:g('#f-notiz')};}
+  return {name:g('#f-name'),version:g('#f-version'),stueckzahl:g('#f-stueckzahl'),
+    et:g('#f-et'),zeitung:g('#f-zeitung'),gewicht:g('#f-gewicht'),notiz:g('#f-notiz')};}
 async function buildRecord(){
-  const data=collect();
-  const status=data.gewicht!==''?'ready':'open';
+  const d=collect();const status=d.gewicht!==''?'ready':'open';
   let created=Date.now();
-  if(editingId){const old=await dbGet(editingId);created=old?.created||created;}
+  if(editingId){const o=await dbGet(editingId);created=o?.created||created;}
   return {id:editingId||('e_'+Date.now()+'_'+Math.random().toString(36).slice(2,7)),
-    created,updated:Date.now(),status,...data,
-    docFull:photos.doc||null,palletFull:photos.pallet||null,
-    beilageFull:photos.beilage.slice(),
-    docThumb:photos.doc?await thumbnail(photos.doc):null};
-}
-function validate(d){if(!d.beilage&&!d.auflage){toast('Mindestens Beilage oder Auflage angeben.',true);return false;}return true;}
+    created,updated:Date.now(),status,...d,filename:buildFilename(d),
+    docFull:photos.doc.slice(),beilageFull:photos.beilage.slice(),palletFull:photos.pallet.slice()};}
+function validate(d){
+  if(photos.doc.length===0){toast('Mindestens 1 Lieferschein-Foto nötig.',true);return false;}
+  if(!d.name&&!d.stueckzahl){toast('Mindestens Name oder Stückzahl angeben.',true);return false;}
+  return true;}
 $('#saveBtn').addEventListener('click',async()=>{
   const rec=await buildRecord();if(!validate(rec))return;
   await dbPut(rec);toast(rec.status==='ready'?'Gespeichert – versandbereit.':'Gespeichert unter „Offen".');showList();});
 $('#saveSendBtn').addEventListener('click',async()=>{
   const rec=await buildRecord();if(!validate(rec))return;
-  await dbPut(rec);await sendSingle(rec.id);});
+  await dbPut(rec);openSendSheet([rec.id]);});
 $('#deleteBtn').addEventListener('click',async()=>{
   if(!editingId)return;await dbDel(editingId);toast('Eintrag gelöscht.');showList();});
 
-/* ---------- send ---------- */
-function bodyFor(e){const L=[];
-  L.push('PALETTEN-ERFASSUNG');L.push('────────────────────');
-  L.push('Beilage:      '+(e.beilage||'—'));
-  L.push('Auflage ges.: '+(e.auflage||'—'));
-  L.push('Version:      '+(e.version||'—'));
-  L.push('ET:           '+(e.et||'—'));
-  L.push('Gewicht:      '+(e.gewicht?e.gewicht+' kg':'—'));
-  L.push('Lagerplatz:   '+(e.lager||'—'));
-  if(e.notiz){L.push('');L.push('Notiz: '+e.notiz);}
-  return L.join('\n');}
-function subjectFor(e){return store.subject.replace('{beilage}',e.beilage||'ohne Beilage');}
-function dataUrlToFile(dataUrl,name){
-  const [head,b64]=dataUrl.split(',');const mime=head.match(/:(.*?);/)[1];
-  const bin=atob(b64);const arr=new Uint8Array(bin.length);
-  for(let i=0;i<bin.length;i++)arr[i]=bin.charCodeAt(i);
-  return new File([arr],name,{type:mime});}
-function filesFor(e,prefix){
-  const f=[];
-  if(e.docFull)f.push(dataUrlToFile(e.docFull,`${prefix}lieferschein.jpg`));
-  if(e.palletFull)f.push(dataUrlToFile(e.palletFull,`${prefix}palette.jpg`));
-  (e.beilageFull||[]).forEach((u,i)=>f.push(dataUrlToFile(u,`${prefix}beilage_${i+1}.jpg`)));
-  return f;}
+/* ---- send sheet (recipient selection) ---- */
+function openSendSheet(ids){
+  if(ids.length===0)return;
+  const emails=store.emails;
+  if(emails.length===0){toast('Erst Empfänger in ⚙ Einstellungen anlegen.',true);openSheet();return;}
+  sendContext={ids};
+  const list=$('#recipList');list.innerHTML='';
+  emails.forEach((em,i)=>{
+    const id='re_'+i;
+    const lab=document.createElement('label');
+    lab.innerHTML=`<input type="checkbox" value="${esc(em)}" ${i<2?'checked':''}><span>${esc(em)}</span>`;
+    list.appendChild(lab);
+  });
+  $('#sendBg').classList.add('on');$('#sendSheet').classList.add('on');
+}
+function closeSendSheet(){$('#sendBg').classList.remove('on');$('#sendSheet').classList.remove('on');sendContext=null;}
+$('#sendBg').addEventListener('click',closeSendSheet);
+$('#doSendBtn').addEventListener('click',doSend);
 
-async function sendSingle(id){
-  const e=await dbGet(id);if(!e)return;
-  const sent=await doShare(subjectFor(e),
-    (store.email?'An: '+store.email+'\n\n':'')+bodyFor(e),filesFor(e,''),store.email);
-  if(sent){await dbDel(id);toast('Versendet & aus Liste entfernt.');showList();}
+async function doSend(){
+  if(!sendContext)return;
+  const recips=[...$('#recipList').querySelectorAll('input:checked')].map(i=>i.value);
+  if(recips.length===0){toast('Mindestens einen Empfänger wählen.',true);return;}
+  const btn=$('#doSendBtn');btn.disabled=true;btn.textContent='Erzeuge PDF …';
+  try{
+    for(const id of sendContext.ids){
+      const e=await dbGet(id);if(!e)continue;
+      const pdfBlob=await makePdf(e);
+      const file=new File([pdfBlob],(e.filename||'Erfassung')+'.pdf',{type:'application/pdf'});
+      const subject=store.subject.replace('{name}',e.name||e.filename||'Beilage');
+      const body=buildBody(e,recips);
+      const sent=await share(subject,body,[file],recips);
+      if(sent)await dbDel(id);
+    }
+    selected.clear();closeSendSheet();toast('Gesendet. Eintrag entfernt.');showList();
+  }catch(err){console.error(err);toast('Fehler beim Senden: '+err.message,true);}
+  finally{btn.disabled=false;btn.textContent='PDF erzeugen & senden';}
 }
-async function sendBulk(){
-  const ids=[...selected];if(ids.length===0)return;
-  const entries=[];for(const id of ids){const e=await dbGet(id);if(e)entries.push(e);}
-  const subject=store.subject.replace('{beilage}',entries.length+' Beilagen');
-  const body=entries.map((e,i)=>`### ${i+1}. ${e.beilage||'(ohne Beilage)'}\n`+bodyFor(e)).join('\n\n');
-  const files=[];entries.forEach((e,i)=>files.push(...filesFor(e,`${i+1}_`)));
-  const sent=await doShare(subject,(store.email?'An: '+store.email+'\n\n':'')+body,files,store.email);
-  if(sent){for(const id of ids)await dbDel(id);selected.clear();
-    toast(`${ids.length} versendet & entfernt.`);showList();}
-}
-async function doShare(subject,text,files,to){
-  if(navigator.canShare&&files.length&&navigator.canShare({files})){
-    try{await navigator.share({title:subject,text,files});return true;}
-    catch(e){if(e.name==='AbortError')return false;}
+
+/* ---- PDF generation (jsPDF) ---- */
+function loadImg(src){return new Promise((res,rej)=>{const i=new Image();
+  i.onload=()=>res(i);i.onerror=rej;i.src=src;});}
+async function makePdf(e){
+  const {jsPDF}=window.jspdf;
+  const pdf=new jsPDF({unit:'mm',format:'a4'});
+  const pageW=210,pageH=297,margin=10;
+  const all=[...(e.docFull||[]),...(e.beilageFull||[]),...(e.palletFull||[])];
+  let first=true;
+  for(const src of all){
+    const img=await loadImg(src);
+    if(!first)pdf.addPage();first=false;
+    const maxW=pageW-margin*2,maxH=pageH-margin*2;
+    let w=img.width,h=img.height;const r=Math.min(maxW/w,maxH/h);
+    w=w*r;h=h*r;const x=(pageW-w)/2,y=(pageH-h)/2;
+    pdf.addImage(src,'JPEG',x,y,w,h);
   }
-  const note=files.length?'\n\n[Fotos bitte manuell anhängen]':'';
-  window.location.href=`mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(text+note)}`;
-  if(files.length)toast('Mail geöffnet – Fotos manuell anhängen.');
+  if(first){ // no images at all – blank note page
+    pdf.text('Keine Bilder',20,20);
+  }
+  return pdf.output('blob');
+}
+function buildBody(e,recips){
+  const L=[];
+  L.push('Beilage: '+(e.name||'—'));
+  if(e.version)L.push('Version: '+e.version);
+  L.push('Stückzahl: '+(e.stueckzahl||'—'));
+  if(e.et)L.push('ET: '+e.et);
+  if(e.zeitung)L.push('Zeitung: '+e.zeitung);
+  L.push('Gewicht: '+(e.gewicht?e.gewicht+' kg':'—'));
+  if(e.notiz){L.push('');L.push('Bemerkung: '+e.notiz);}
+  L.push('');L.push('Dateiname: '+(e.filename||'')+'.pdf');
+  return L.join('\n');
+}
+async function share(subject,body,files,recips){
+  if(navigator.canShare&&navigator.canShare({files})){
+    try{await navigator.share({title:subject,text:body,files});return true;}
+    catch(err){if(err.name==='AbortError')return false;}
+  }
+  // Fallback: download PDF + open mailto with recipients
+  const f=files[0];const url=URL.createObjectURL(f);
+  const a=document.createElement('a');a.href=url;a.download=f.name;a.click();
+  setTimeout(()=>URL.revokeObjectURL(url),4000);
+  const to=recips.join(',');
+  window.location.href=`mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body+'\n\n[PDF wurde heruntergeladen – bitte anhängen]')}`;
   return await confirmSent();
 }
 function confirmSent(){return new Promise(res=>{setTimeout(()=>{
-  res(window.confirm('Wurde die E-Mail gesendet?\n\nOK = Eintrag löschen · Abbrechen = behalten'));},800);});}
+  res(window.confirm('Wurde die E-Mail gesendet?\n\nOK = Eintrag löschen · Abbrechen = behalten'));},900);});}
 
-/* ---------- settings ---------- */
+/* ---- settings ---- */
+function renderMailList(){
+  const wrap=$('#mailList');wrap.innerHTML='';
+  const emails=store.emails.length?store.emails:[''];
+  emails.forEach((em,i)=>{
+    const row=document.createElement('div');row.className='mailrow';
+    row.innerHTML=`<input type="email" value="${esc(em)}" placeholder="adresse@firma.de">
+      <button class="rm">×</button>`;
+    row.querySelector('.rm').addEventListener('click',()=>{row.remove();});
+    wrap.appendChild(row);
+  });
+}
+$('#addMail').addEventListener('click',()=>{
+  const wrap=$('#mailList');const row=document.createElement('div');row.className='mailrow';
+  row.innerHTML=`<input type="email" value="" placeholder="adresse@firma.de"><button class="rm">×</button>`;
+  row.querySelector('.rm').addEventListener('click',()=>row.remove());wrap.appendChild(row);});
 function openSheet(){
-  $('#set-email').value=store.email;$('#set-subject').value=store.subject;$('#set-worker').value=store.worker;
+  renderMailList();
+  $('#set-subject').value=store.subject;$('#set-worker').value=store.worker;
   $('#sheetBg').classList.add('on');$('#sheet').classList.add('on');}
 function closeSheet(){$('#sheetBg').classList.remove('on');$('#sheet').classList.remove('on');}
 $('#gearBtn').addEventListener('click',openSheet);
 $('#sheetBg').addEventListener('click',closeSheet);
 $('#saveSettings').addEventListener('click',()=>{
-  store.email=$('#set-email').value.trim();
-  store.subject=$('#set-subject').value.trim()||'Wareneingang – {beilage}';
-  store.worker=$('#set-worker').value.trim();closeSheet();toast('Einstellungen gespeichert.');});
+  const emails=[...$('#mailList').querySelectorAll('input')].map(i=>i.value.trim()).filter(Boolean);
+  store.emails=emails;
+  store.subject=$('#set-subject').value.trim()||'Wareneingang – {name}';
+  store.worker=$('#set-worker').value.trim();
+  closeSheet();toast('Einstellungen gespeichert.');});
 
 function esc(s){return (s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 
