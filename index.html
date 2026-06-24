@@ -155,6 +155,9 @@
   .field input:focus,.field textarea:focus{outline:none;border-color:var(--accent)}
   .field textarea{min-height:64px;resize:vertical;line-height:1.4}
   .field input.weight{border-color:var(--warn);background:rgba(255,210,61,.06)}
+  .field input.lager{border-color:var(--danger);background:rgba(255,92,92,.07);
+    font-family:var(--mono);font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+  .field input.lager.ok{border-color:var(--ok);background:rgba(61,220,132,.06)}
 
   .fn-preview{margin-top:14px;background:var(--surface-2);border:1px solid var(--line);
     border-radius:11px;padding:12px 14px}
@@ -312,8 +315,12 @@
   <section class="card">
     <h2><span class="n">03</span> Ergänzen</h2>
     <div class="field" style="margin-bottom:13px">
-      <label>Gewicht <span class="src miss" id="src-gewicht">kommt später</span></label>
-      <input id="f-gewicht" class="weight" inputmode="decimal" placeholder="kg – leer lassen, später nachtragen" autocomplete="off">
+      <label>Lagerort <span class="src miss" id="src-lager">Pflicht zum Senden</span></label>
+      <input id="f-lager" class="lager" placeholder="z. B. A-0-4 oder G-1-12" autocomplete="off" autocapitalize="characters">
+    </div>
+    <div class="field" style="margin-bottom:13px">
+      <label>Gewicht (g) <span class="src miss" id="src-gewicht">kommt später</span></label>
+      <input id="f-gewicht" class="weight" inputmode="decimal" placeholder="Gramm – leer lassen, später nachtragen" autocomplete="off">
     </div>
     <div class="field">
       <label>Bemerkung <span class="src manual">optional</span></label>
@@ -349,6 +356,10 @@
   <h3>Einstellungen</h3>
   <p>Wird auf dem Gerät gespeichert.</p>
   <div class="field" style="margin-bottom:14px">
+    <label>Dein Name (Aufgenommen von)</label>
+    <input id="set-username" placeholder="z. B. André Bendfeldt" autocomplete="name">
+  </div>
+  <div class="field" style="margin-bottom:14px">
     <label>Empfänger-Adressen</label>
     <div class="maillist" id="mailList"></div>
     <button class="addmail" id="addMail">＋ Adresse hinzufügen</button>
@@ -379,6 +390,8 @@ const store={
   set subject(v){localStorage.setItem('pe_subject',v)},
   get worker(){return localStorage.getItem('pe_worker')||''},
   set worker(v){localStorage.setItem('pe_worker',v)},
+  get username(){return localStorage.getItem('pe_username')||''},
+  set username(v){localStorage.setItem('pe_username',v)},
 };
 
 /* ---- migrate old single email if present ---- */
@@ -462,8 +475,9 @@ function entryEl(e){
   el.innerHTML=`${chk}<div class="body">
       <div class="name">${esc(e.filename||'(unbenannt)')}.pdf</div>
       <div class="meta">
+        ${e.lager?`<span>Lager <b style="color:var(--danger)">${esc((e.lager||'').toUpperCase())}</b></span>`:''}
         ${e.stueckzahl?`<span>Stk <b>${esc(e.stueckzahl)}</b></span>`:''}
-        ${ready?`<span>Gewicht <b>${esc(e.gewicht)} kg</b></span>`:`<span style="color:var(--warn)">Gewicht fehlt</span>`}
+        ${ready?`<span>Gewicht <b>${esc(e.gewicht)} g</b></span>`:`<span style="color:var(--warn)">Gewicht fehlt</span>`}
       </div></div>
     <span class="tag ${ready?'ready':'open'}">${ready?'bereit':'offen'}</span>
     ${np?`<span class="pcount">📷 ${np}</span>`:''}`;
@@ -494,12 +508,12 @@ async function openEntry(id){
     $('#f-name').value=e.name||'';$('#f-version').value=e.version||'';
     $('#f-stueckzahl').value=e.stueckzahl||'';$('#f-et').value=e.et||'';
     $('#f-zeitung').value=e.zeitung||'';$('#f-gewicht').value=e.gewicht||'';
-    $('#f-notiz').value=e.notiz||'';
+    $('#f-lager').value=e.lager||'';$('#f-notiz').value=e.notiz||'';
     photos.doc=(e.docFull||[]).slice();
     photos.beilage=(e.beilageFull||[]).slice();
     photos.pallet=(e.palletFull||[]).slice();
     $('#hTitle').textContent='Bearbeiten';$('#saveLabel').textContent='Änderungen speichern';
-    $('#deleteBtn').classList.remove('hidden');refreshWeightSrc();
+    $('#deleteBtn').classList.remove('hidden');refreshWeightSrc();refreshLagerSrc();
     ['name','version','stueckzahl','et','zeitung'].forEach(k=>{
       if($('#f-'+k).value)setSrc(k,'manual','gesetzt');});
   }else{
@@ -508,9 +522,10 @@ async function openEntry(id){
   }
   renderStrips();refreshScan();refreshSaveButtons();refreshFilename();showCapture();}
 function resetForm(){
-  ['name','version','stueckzahl','et','zeitung','gewicht','notiz'].forEach(k=>$('#f-'+k).value='');
+  ['name','version','stueckzahl','et','zeitung','lager','gewicht','notiz'].forEach(k=>$('#f-'+k).value='');
   ['name','version','stueckzahl','et','zeitung'].forEach(k=>setSrc(k,'miss','—'));
-  setSrc('gewicht','miss','kommt später');$('#reviewNote').textContent='';}
+  setSrc('gewicht','miss','kommt später');setSrc('lager','miss','Pflicht zum Senden');
+  $('#f-lager').classList.remove('ok');$('#reviewNote').textContent='';}
 
 /* ---- photo strips ---- */
 function renderStrips(){
@@ -581,6 +596,11 @@ function setSrc(k,cls,txt){const el=$('#src-'+k);el.className='src '+cls;el.text
     const el=$('#src-'+k);if(!el.classList.contains('ai'))setSrc(k,'manual','manuell');
     refreshFilename();});});
 $('#f-gewicht').addEventListener('input',()=>{refreshWeightSrc();refreshSaveButtons();});
+$('#f-lager').addEventListener('input',()=>{refreshLagerSrc();});
+function refreshLagerSrc(){const has=$('#f-lager').value.trim()!=='';
+  $('#f-lager').classList.toggle('ok',has);
+  $('#src-lager').className='src '+(has?'manual':'miss');
+  $('#src-lager').textContent=has?'gesetzt':'Pflicht zum Senden';}
 function refreshWeightSrc(){const has=$('#f-gewicht').value.trim()!=='';
   $('#f-gewicht').classList.toggle('weight',!has);
   $('#src-gewicht').className='src '+(has?'manual':'miss');
@@ -593,23 +613,29 @@ function refreshSaveButtons(){const has=$('#f-gewicht').value.trim()!=='';
 /* ---- save ---- */
 function collect(){const g=id=>$(id).value.trim();
   return {name:g('#f-name'),version:g('#f-version'),stueckzahl:g('#f-stueckzahl'),
-    et:g('#f-et'),zeitung:g('#f-zeitung'),gewicht:g('#f-gewicht'),notiz:g('#f-notiz')};}
+    et:g('#f-et'),zeitung:g('#f-zeitung'),lager:g('#f-lager').toUpperCase(),gewicht:g('#f-gewicht'),notiz:g('#f-notiz')};}
 async function buildRecord(){
   const d=collect();const status=d.gewicht!==''?'ready':'open';
-  let created=Date.now();
-  if(editingId){const o=await dbGet(editingId);created=o?.created||created;}
+  let created=Date.now(),erfasstVon=store.username;
+  if(editingId){const o=await dbGet(editingId);created=o?.created||created;
+    erfasstVon=o?.erfasstVon||store.username;}
   return {id:editingId||('e_'+Date.now()+'_'+Math.random().toString(36).slice(2,7)),
-    created,updated:Date.now(),status,...d,filename:buildFilename(d),
+    created,updated:Date.now(),erfasstVon,status,...d,filename:buildFilename(d),
     docFull:photos.doc.slice(),beilageFull:photos.beilage.slice(),palletFull:photos.pallet.slice()};}
 function validate(d){
   if(photos.doc.length===0){toast('Mindestens 1 Lieferschein-Foto nötig.',true);return false;}
   if(!d.name&&!d.stueckzahl){toast('Mindestens Name oder Stückzahl angeben.',true);return false;}
   return true;}
+function validateSend(d){
+  if(!validate(d))return false;
+  if(!d.lager){toast('Lagerort ist Pflicht zum Senden (z. B. A-0-4).',true);
+    $('#f-lager').focus();$('#f-lager').scrollIntoView({behavior:'smooth',block:'center'});return false;}
+  return true;}
 $('#saveBtn').addEventListener('click',async()=>{
   const rec=await buildRecord();if(!validate(rec))return;
   await dbPut(rec);toast(rec.status==='ready'?'Gespeichert – versandbereit.':'Gespeichert unter „Offen".');showList();});
 $('#saveSendBtn').addEventListener('click',async()=>{
-  const rec=await buildRecord();if(!validate(rec))return;
+  const rec=await buildRecord();if(!validateSend(rec))return;
   await dbPut(rec);openSendSheet([rec.id]);});
 $('#deleteBtn').addEventListener('click',async()=>{
   if(!editingId)return;await dbDel(editingId);toast('Eintrag gelöscht.');showList();});
@@ -639,6 +665,13 @@ async function doSend(){
   if(recips.length===0){toast('Mindestens einen Empfänger wählen.',true);return;}
   const btn=$('#doSendBtn');btn.disabled=true;btn.textContent='Erzeuge PDF …';
   try{
+    // Lagerort-Pflicht prüfen
+    const missing=[];
+    for(const id of sendContext.ids){const e=await dbGet(id);
+      if(e&&!(e.lager&&e.lager.trim())){missing.push(e.filename||id);}}
+    if(missing.length){
+      toast('Lagerort fehlt bei: '+missing.join(', ')+' – im Eintrag nachtragen.',true);
+      btn.disabled=false;btn.textContent='PDF erzeugen & senden';return;}
     for(const id of sendContext.ids){
       const e=await dbGet(id);if(!e)continue;
       const pdfBlob=await makePdf(e);
@@ -659,32 +692,143 @@ function loadImg(src){return new Promise((res,rej)=>{const i=new Image();
 async function makePdf(e){
   const {jsPDF}=window.jspdf;
   const pdf=new jsPDF({unit:'mm',format:'a4'});
-  const pageW=210,pageH=297,margin=10;
+  const pageW=210,pageH=297,margin=15;
+
+  /* ===== Deckblatt ===== */
+  await drawCover(pdf,e,pageW,pageH,margin);
+
+  /* ===== Fotos (je 1 pro Seite) ===== */
   const all=[...(e.docFull||[]),...(e.beilageFull||[]),...(e.palletFull||[])];
-  let first=true;
   for(const src of all){
     const img=await loadImg(src);
-    if(!first)pdf.addPage();first=false;
-    const maxW=pageW-margin*2,maxH=pageH-margin*2;
+    pdf.addPage();
+    const m=10,maxW=pageW-m*2,maxH=pageH-m*2;
     let w=img.width,h=img.height;const r=Math.min(maxW/w,maxH/h);
     w=w*r;h=h*r;const x=(pageW-w)/2,y=(pageH-h)/2;
     pdf.addImage(src,'JPEG',x,y,w,h);
   }
-  if(first){ // no images at all – blank note page
-    pdf.text('Keine Bilder',20,20);
-  }
   return pdf.output('blob');
+}
+
+async function drawCover(pdf,e,pageW,pageH,margin){
+  let y=margin;
+  // Eyebrow
+  pdf.setFont('helvetica','normal');pdf.setFontSize(9);pdf.setTextColor(120,120,120);
+  pdf.text('COLDSET INNOVATION · WARENEINGANG',margin,y);y+=10;
+
+  // Titel = Beilagenname
+  pdf.setFont('helvetica','bold');pdf.setFontSize(20);pdf.setTextColor(20,20,20);
+  pdf.text(e.name||'Beilage',margin,y,{maxWidth:pageW-margin*2});y+=8;
+
+  // Version direkt unter dem Namen
+  if(e.version){
+    pdf.setFont('helvetica','normal');pdf.setFontSize(13);pdf.setTextColor(110,110,110);
+    pdf.text(e.version,margin,y);y+=2;
+  }else{y-=2;}
+
+  // Trennlinie
+  pdf.setDrawColor(210,210,210);pdf.setLineWidth(0.4);
+  y+=6;pdf.line(margin,y,pageW-margin,y);y+=12;
+
+  // ===== Eine Detailtabelle (ohne Name/Version) =====
+  const tableW=pageW-margin*2, labelX=margin+3, valueX=margin+62, rowH=12;
+  const tableTop=y;
+  const rows=[
+    {l:'Lagerort',  v:(e.lager||'—').toUpperCase(), hi:'lager'},
+    {l:'Gewicht',   v:(e.gewicht?e.gewicht+' g':'—'), hi:'gewicht'},
+    {l:'Stückzahl', v:(e.stueckzahl||'—').toString()},
+    {l:'ET',        v:e.et||'—'},
+    {l:'Zeitung',   v:e.zeitung||'—'},
+  ];
+  rows.forEach((r,idx)=>{
+    pdf.setFillColor(idx%2===0?249:255,idx%2===0?249:255,idx%2===0?249:255);
+    pdf.rect(margin,y,tableW,rowH,'F');
+    pdf.setFont('helvetica','normal');pdf.setFontSize(11);pdf.setTextColor(110,110,110);
+    pdf.text(r.l,labelX,y+rowH/2+1.2,{baseline:'middle'});
+    if(r.hi==='lager'){pdf.setFont('helvetica','bold');pdf.setFontSize(17);pdf.setTextColor(20,20,20);}
+    else if(r.hi==='gewicht'){pdf.setFont('helvetica','bold');pdf.setFontSize(15);pdf.setTextColor(200,30,30);}
+    else{pdf.setFont('helvetica','bold');pdf.setFontSize(12);pdf.setTextColor(30,30,30);}
+    pdf.text(r.v,valueX,y+rowH/2+1.2,{baseline:'middle',maxWidth:tableW-(valueX-margin)-3});
+    y+=rowH;
+  });
+  pdf.setDrawColor(225,225,225);pdf.setLineWidth(0.3);
+  pdf.rect(margin,tableTop,tableW,rowH*rows.length);
+  y+=2;
+
+  // ===== Bemerkung (immer) =====
+  y+=10;pdf.setFont('helvetica','bold');pdf.setFontSize(11);pdf.setTextColor(40,40,40);
+  pdf.text('Bemerkung',margin,y);y+=6;
+  pdf.setFont('helvetica','normal');pdf.setFontSize(10);pdf.setTextColor(60,60,60);
+  const notizText=(e.notiz&&e.notiz.trim())?e.notiz:'—';
+  const lines=pdf.splitTextToSize(notizText,pageW-margin*2);
+  pdf.text(lines,margin,y);y+=lines.length*5;
+
+  // ===== Lieferschein- + Beilagenfotos im freien Bereich =====
+  const blockY=pageH-38;            // Oberkante Aufnahme-Block
+  const galleryImgs=[...(e.docFull||[]),...(e.beilageFull||[])];
+  if(galleryImgs.length){
+    y+=12;
+    pdf.setFont('helvetica','bold');pdf.setFontSize(11);pdf.setTextColor(40,40,40);
+    pdf.text('Lieferschein & Beilage',margin,y);y+=5;
+    const galTop=y, galBottom=blockY-6;
+    const availH=galBottom-galTop, availW=pageW-margin*2;
+    const gap=4, perRow=3;
+    const n=galleryImgs.length;
+    const rowsCount=Math.ceil(n/perRow);
+    const cellW=(availW-gap*(perRow-1))/perRow;
+    const cellH=(availH-gap*(rowsCount-1))/rowsCount;
+    for(let i=0;i<n;i++){
+      try{
+        const row=Math.floor(i/perRow), col=i%perRow;
+        const itemsInRow=Math.min(perRow,n-row*perRow);
+        const img=await loadImg(galleryImgs[i]);
+        let w=img.width,h=img.height;
+        const r=Math.min(cellW/w, cellH/h);
+        w=w*r;h=h*r;
+        // Reihe horizontal zentrieren, Zelle vertikal zentrieren
+        const rowW=itemsInRow*cellW+gap*(itemsInRow-1);
+        const rowX=margin+(availW-rowW)/2;
+        const cx=rowX+col*(cellW+gap)+(cellW-w)/2;
+        const cy=galTop+row*(cellH+gap)+(cellH-h)/2;
+        pdf.addImage(galleryImgs[i],'JPEG',cx,cy,w,h);
+        pdf.setDrawColor(220,220,220);pdf.setLineWidth(0.3);
+        pdf.rect(cx,cy,w,h);
+      }catch(err){/* Bild übersprungen */}
+    }
+  }
+
+  // ===== Aufnahme-Block unten =====
+  const datum=new Date(e.created||Date.now()).toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'});
+  const von=(e.erfasstVon||'').trim();
+  pdf.setDrawColor(210,210,210);pdf.setLineWidth(0.4);
+  pdf.line(margin,blockY,pageW-margin,blockY);
+  pdf.setFont('helvetica','normal');pdf.setFontSize(10);pdf.setTextColor(110,110,110);
+  pdf.text('Aufnahmedatum',margin,blockY+8);
+  pdf.text('Aufgenommen von',pageW/2,blockY+8);
+  pdf.setFont('helvetica','bold');pdf.setFontSize(12);pdf.setTextColor(30,30,30);
+  pdf.text(datum,margin,blockY+15);
+  pdf.text(von||'—',pageW/2,blockY+15);
+
+  // ===== Footer =====
+  pdf.setFont('helvetica','normal');pdf.setFontSize(8);pdf.setTextColor(150,150,150);
+  const stamp=new Date().toLocaleString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  pdf.text('Erstellt: '+stamp+'  ·  '+(e.filename||'')+'.pdf',margin,pageH-12);
 }
 function buildBody(e,recips){
   const L=[];
+  L.push('LAGERORT: '+((e.lager||'—').toUpperCase()));
+  L.push('Gewicht: '+(e.gewicht?e.gewicht+' g':'—'));
+  L.push('');
   L.push('Beilage: '+(e.name||'—'));
   if(e.version)L.push('Version: '+e.version);
   L.push('Stückzahl: '+(e.stueckzahl||'—'));
   if(e.et)L.push('ET: '+e.et);
   if(e.zeitung)L.push('Zeitung: '+e.zeitung);
-  L.push('Gewicht: '+(e.gewicht?e.gewicht+' kg':'—'));
   if(e.notiz){L.push('');L.push('Bemerkung: '+e.notiz);}
-  L.push('');L.push('Dateiname: '+(e.filename||'')+'.pdf');
+  L.push('');
+  L.push('Aufnahmedatum: '+new Date(e.created||Date.now()).toLocaleDateString('de-DE'));
+  if(e.erfasstVon)L.push('Aufgenommen von: '+e.erfasstVon);
+  L.push('Dateiname: '+(e.filename||'')+'.pdf');
   return L.join('\n');
 }
 async function share(subject,body,files,recips){
@@ -721,6 +865,7 @@ $('#addMail').addEventListener('click',()=>{
   row.querySelector('.rm').addEventListener('click',()=>row.remove());wrap.appendChild(row);});
 function openSheet(){
   renderMailList();
+  $('#set-username').value=store.username;
   $('#set-subject').value=store.subject;$('#set-worker').value=store.worker;
   $('#sheetBg').classList.add('on');$('#sheet').classList.add('on');}
 function closeSheet(){$('#sheetBg').classList.remove('on');$('#sheet').classList.remove('on');}
@@ -731,6 +876,7 @@ $('#saveSettings').addEventListener('click',()=>{
   store.emails=emails;
   store.subject=$('#set-subject').value.trim()||'Wareneingang – {name}';
   store.worker=$('#set-worker').value.trim();
+  store.username=$('#set-username').value.trim();
   closeSheet();toast('Einstellungen gespeichert.');});
 
 function esc(s){return (s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
