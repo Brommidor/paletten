@@ -765,11 +765,11 @@ async function drawCover(pdf,e,pageW,pageH,margin){
 
   // ===== Lieferschein- + Beilagenfotos im freien Bereich =====
   const blockY=pageH-38;            // Oberkante Aufnahme-Block
-  const galleryImgs=[...(e.docFull||[]),...(e.beilageFull||[])];
+  const galleryImgs=[...(e.beilageFull||[])];
   if(galleryImgs.length){
     y+=12;
     pdf.setFont('helvetica','bold');pdf.setFontSize(11);pdf.setTextColor(40,40,40);
-    pdf.text('Lieferschein & Beilage',margin,y);y+=5;
+    pdf.text('Beilage',margin,y);y+=5;
     const galTop=y, galBottom=blockY-6;
     const availH=galBottom-galTop, availW=pageW-margin*2;
     const gap=4, perRow=3;
