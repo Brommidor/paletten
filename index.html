@@ -103,6 +103,7 @@
     font-weight:700;font-size:.86rem;cursor:pointer}
   .bulkbar .send{background:var(--ok);color:#06301a}
   .bulkbar .clear{background:var(--surface-2);color:var(--ink-dim)}
+  .bulkbar .del{background:rgba(255,92,92,.18);color:var(--danger)}
 
   /* CAPTURE */
   .strip-label{font-size:.74rem;color:var(--ink-dim);margin:0 0 8px;
@@ -252,6 +253,7 @@
 <div class="bulkbar" id="bulkbar">
   <span class="cnt"><b id="bulkCount">0</b> ausgewählt</span>
   <button class="clear" id="bulkClear">Abwählen</button>
+  <button class="del" id="bulkDelete">🗑 Löschen</button>
   <button class="send" id="bulkSend">✉ Senden</button>
 </div>
 
@@ -496,6 +498,12 @@ $$('.seg button').forEach(b=>b.addEventListener('click',()=>{
   $$('.seg button').forEach(x=>x.classList.remove('on'));
   b.classList.add('on');currentTab=b.dataset.tab;selected.clear();renderList();}));
 $('#bulkClear').addEventListener('click',()=>{selected.clear();renderList();});
+$('#bulkDelete').addEventListener('click',async()=>{
+  if(selected.size===0)return;
+  if(!confirm(`${selected.size} Eintrag${selected.size>1?'e':''} unwiderruflich löschen?`))return;
+  for(const id of selected)await dbDel(id);
+  selected.clear();toast('Gelöscht.');renderList();
+});
 $('#bulkSend').addEventListener('click',()=>openSendSheet([...selected]));
 
 /* ---- open entry ---- */
@@ -832,20 +840,21 @@ function buildBody(e,recips){
   return L.join('\n');
 }
 async function share(subject,body,files,recips){
-  if(navigator.canShare&&navigator.canShare({files})){
-    try{await navigator.share({title:subject,text:body,files});return true;}
-    catch(err){if(err.name==='AbortError')return false;}
-  }
-  // Fallback: download PDF + open mailto with recipients
+  // PDF herunterladen
   const f=files[0];const url=URL.createObjectURL(f);
   const a=document.createElement('a');a.href=url;a.download=f.name;a.click();
-  setTimeout(()=>URL.revokeObjectURL(url),4000);
-  const to=recips.join(',');
-  window.location.href=`mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body+'\n\n[PDF wurde heruntergeladen – bitte anhängen]')}`;
+  setTimeout(()=>URL.revokeObjectURL(url),5000);
+  // Outlook Web öffnen (vorausgefüllt)
+  const to=recips.join(';');
+  const owUrl='https://outlook.office.com/mail/deeplink/compose?'
+    +'to='+encodeURIComponent(to)
+    +'&subject='+encodeURIComponent(subject)
+    +'&body='+encodeURIComponent(body+'\n\n[PDF wurde heruntergeladen – bitte anhängen]');
+  window.open(owUrl,'_blank');
   return await confirmSent();
 }
 function confirmSent(){return new Promise(res=>{setTimeout(()=>{
-  res(window.confirm('Wurde die E-Mail gesendet?\n\nOK = Eintrag löschen · Abbrechen = behalten'));},900);});}
+  res(window.confirm('E-Mail gesendet?\n\nOK = Eintrag löschen · Abbrechen = behalten'));},1200);});}
 
 /* ---- settings ---- */
 function renderMailList(){
@@ -879,10 +888,8 @@ $('#saveSettings').addEventListener('click',()=>{
   store.username=$('#set-username').value.trim();
   closeSheet();toast('Einstellungen gespeichert.');});
 
-function esc(s){return (s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
-(async()=>{await openDB();showList();})();
-if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{});}
-</script>
-</body>
-</html>
+/* ---- init ---- */
+loadStore();renderList();
+</script></body></html>
