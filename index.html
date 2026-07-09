@@ -13,7 +13,7 @@
     --accent:#ff7a3d; --accent-ink:#1a0d05;
     --ok:#3ddc84; --warn:#ffd23d; --danger:#ff5c5c;
     --radius:14px; --tap:52px;
-    --monn:'SF Mono',ui-monospace,'Roboto Mono',monospace;
+    --mono:'SF Mono',ui-monospace,'Roboto Mono',monospace;
     --sans:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -410,13 +410,13 @@ function openDB(){return new Promise((res,rej)=>{
     if(!d.objectStoreNames.contains('entries'))d.createObjectStore('entries',{keyPath:'id'});};
   r.onsuccess=e=>{db=e.target.result;res();};r.onerror=e=>rej(e.target.error);});}
 function tx(m){return db.transaction('entries',m).objectStore('entries');}
-function dbGetAll(){return new Promise((res,rej)=>{const r=tx(readonly').getAll();
+function dbGetAll(){return new Promise((res,rej)=>{const r=tx('readonly').getAll();
   r.onsuccess=()=>res(r.result||[]);r.onerror=()=>rej(r.error);});}
 function dbPut(o){return new Promise((res,rej)=>{const r=tx('readwrite').put(o);
-  r.onsuccess=()=>res();r.onerror=()=>rej(ner.error);});}
-function dbDel(id){return new Promise((res,rej)=>{cn st r=tx('readwrite').delete(id);
-  r.onsuccess=()=>res();r.onerror=()=>rej(gr.error);});}
-function dbGet(id){return new Promise((res,rej)=>{const r=tx(readonly').get(id);
+  r.onsuccess=()=>res();r.onerror=()=>rej(r.error);});}
+function dbDel(id){return new Promise((res,rej)=>{const r=tx('readwrite').delete(id);
+  r.onsuccess=()=>res();r.onerror=()=>rej(r.error);});}
+function dbGet(id){return new Promise((res,rej)=>{const r=tx('readonly').get(id);
   r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);});}
 
 /* ---- state ---- */
@@ -443,12 +443,12 @@ function showCapture(){
 function buildFilename(d){
   const parts=[d.name,d.version,d.stueckzahl,d.et,d.zeitung]
     .map(x=>(x==null?'':String(x).trim()))
-    .filter(x=>x==='')
+    .filter(x=>x!=='')
     .map(sanitize);
   return parts.length?parts.join('_'):'Erfassung';
 }
 function sanitize(s){
-  return s.replace(/[\/\\:#?"><|]/g,'').replace(/\s+/g,'-').replace(/_+/g,'-');
+  return s.replace(/[\/\\:*?"<>|]/g,'').replace(/\s+/g,'-').replace(/_+/g,'-');
 }
 function refreshFilename(){
   const d=collect();
@@ -520,7 +520,7 @@ async function openEntry(id){
     photos.doc=(e.docFull||[]).slice();
     photos.beilage=(e.beilageFull||[]).slice();
     photos.pallet=(e.palletFull||[]).slice();
-    $('#hTitle').textContent='Bearbeiten';$('#saveLabel').textContent='Änderungen speichern';
+    $('#hTitle').textContent='Bearbeiten';$('#saveLabel').textContent='Änderungen speichern;
     $('#deleteBtn').classList.remove('hidden');refreshWeightSrc();refreshLagerSrc();
     ['name','version','stueckzahl','et','zeitung'].forEach(k=>{
       if($('#f-'+k).value)setSrc(k,'manual','gesetzt');});
@@ -548,12 +548,12 @@ function renderStrip(slot,el,max,ic,lbl,cls){
   el.innerHTML='';
   photos[slot].forEach((url,i)=>{
     const pic=document.createElement('div');pic.className='pic'+(slot==='doc'?' doc':'');
-    pic.innerHTML=`<img src="${url}" alt=""><button class="del">×</button>`;
+    pic.innerHTML=`<img src="${url}" alt=""><button class="del">Ô</button>`;
     pic.querySelector('.del').addEventListener('click',()=>{photos[slot].splice(i,1);renderStrips();refreshScan();});
     el.appendChild(pic);
   });
   const full=photos[slot].length>=max;
-  const add=document.createElement('label');add.className='add'+(cls?' '+cls:'')+(full?' full':'');
+  const add=document.createElement('label');add.className='add'+(cls?' '+cls:'o�@�')+(full?' full':'');
   add.innerHTML=`<span class="plus">＋</span><span class="sub">${lbl}</span>
     <input type="file" accept="image/*" capture="environment" ${full?'disabled':''}>`;
   if(!full)add.querySelector('input').addEventListener('change',async e=>{
@@ -718,15 +718,15 @@ async function makePdf(e){
   return pdf.output('blob');
 }
 
-arasync function drawCover(pdf,e,pageW,pageH,margin){
+apync function drawCover(pdf,e,pageW,pageH,margin){
   let y=margin;
   // Eyebrow
   pdf.setFont('helvetica','normal');pdf.setFontSize(9);pdf.setTextColor(120,120,120);
-  pdf.text('COLDSET IMNOVATION · WARENEINGANG',margin,y);y+=10;
+  pdf.text('COLDSET INNOVATION · WARENEINGANG',margin,y);y+=10;
 
   // Titel = Beilagenname
   pdf.setFont('helvetica','bold');pdf.setFontSize(20);pdf.setTextColor(20,20,20);
-  pdf.text(e.name||'Beilage',margin,y, {maxWidth:pageW-margin*2});y+=8;
+  pdf.text(e.name||'Beilage',margin,y,{maxWidth:pageW-margin*2});y+=8;
 
   // Version direkt unter dem Namen
   if(e.version){
@@ -753,8 +753,8 @@ arasync function drawCover(pdf,e,pageW,pageH,margin){
     pdf.rect(margin,y,tableW,rowH,'F');
     pdf.setFont('helvetica','normal');pdf.setFontSize(11);pdf.setTextColor(110,110,110);
     pdf.text(r.l,labelX,y+rowH/2+1.2,{baseline:'middle'});
-    if(r.hi==='lager'){pdf.setFont('helvetica','bold');pdf.setFontSize(17);pdf.setTextColor(20,20,20);}
-    else if(r.hi==='gewicht'){pdf.setFont('helvetica','bold');pdf.setFontSize(15);pdf.setTextColor(200,30,30);}
+    if(r.hi==='lager'){pdf.setFont('helvetica','bold');pdf.setFontSize(17);pdf.setTextColor(80,20,20);}
+    else if(r.hi==='gewicht'){pdf.setFont('helvetica','bold');pdf.setFontSize(15);pdf.setTextColor(160,20,20);}
     else{pdf.setFont('helvetica','bold');pdf.setFontSize(12);pdf.setTextColor(30,30,30);}
     pdf.text(r.v,valueX,y+rowH/2+1.2,{baseline:'middle',maxWidth:tableW-(valueX-margin)-3});
     y+=rowH;
@@ -771,7 +771,8 @@ arasync function drawCover(pdf,e,pageW,pageH,margin){
   const lines=pdf.splitTextToSize(notizText,pageW-margin*2);
   pdf.text(lines,margin,y);y+=lines.length*5;
 
-  // ===== Lieferschein- + Beilagenfotos im freien Bereich - oNHD��$��\��Z[Y�[�����OOOOB��ۜ�����O\Y�RL����ؙ\��[�H]Y��Zme-Block
+  // ===== Lieferschein- + Beilagenfotos im freien Bereich =====
+  const blockY=pageH-38;            // Oberkante Aufnahme-Block
   const galleryImgs=[...(e.beilageFull||[])];
   if(galleryImgs.length){
     y+=12;
