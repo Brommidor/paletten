@@ -520,7 +520,7 @@ async function openEntry(id){
     photos.doc=(e.docFull||[]).slice();
     photos.beilage=(e.beilageFull||[]).slice();
     photos.pallet=(e.palletFull||[]).slice();
-    $('#hTitle').textContent='Bearbeiten';$('#saveLabel').textContent='Änderungen speichern;
+    $('#hTitle').textContent='Bearbeiten';$('#saveLabel').textContent='Änderungen speichern';
     $('#deleteBtn').classList.remove('hidden');refreshWeightSrc();refreshLagerSrc();
     ['name','version','stueckzahl','et','zeitung'].forEach(k=>{
       if($('#f-'+k).value)setSrc(k,'manual','gesetzt');});
@@ -548,12 +548,12 @@ function renderStrip(slot,el,max,ic,lbl,cls){
   el.innerHTML='';
   photos[slot].forEach((url,i)=>{
     const pic=document.createElement('div');pic.className='pic'+(slot==='doc'?' doc':'');
-    pic.innerHTML=`<img src="${url}" alt=""><button class="del">Ô</button>`;
+    pic.innerHTML=`<img src="${url}" alt=""><button class="del">×</button>`;
     pic.querySelector('.del').addEventListener('click',()=>{photos[slot].splice(i,1);renderStrips();refreshScan();});
     el.appendChild(pic);
   });
   const full=photos[slot].length>=max;
-  const add=document.createElement('label');add.className='add'+(cls?' '+cls:'o�@�')+(full?' full':'');
+  const add=document.createElement('label');add.className='add'+(cls?' '+cls:'')+(full?' full':'');
   add.innerHTML=`<span class="plus">＋</span><span class="sub">${lbl}</span>
     <input type="file" accept="image/*" capture="environment" ${full?'disabled':''}>`;
   if(!full)add.querySelector('input').addEventListener('change',async e=>{
@@ -658,7 +658,7 @@ function openSendSheet(ids){
   emails.forEach((em,i)=>{
     const id='re_'+i;
     const lab=document.createElement('label');
-    lab.innerHTML<`<input type="checkbox" value="${esc(em)}" ${i<2?'checked':''}><span>${esc(em)}</span>`;
+    lab.innerHTML=`<input type="checkbox" value="${esc(em)}" ${i<2?'checked':''}><span>${esc(em)}</span>`;
     list.appendChild(lab);
   });
   $('#sendBg').classList.add('on');$('#sendSheet').classList.add('on');
@@ -718,7 +718,7 @@ async function makePdf(e){
   return pdf.output('blob');
 }
 
-apync function drawCover(pdf,e,pageW,pageH,margin){
+async function drawCover(pdf,e,pageW,pageH,margin){
   let y=margin;
   // Eyebrow
   pdf.setFont('helvetica','normal');pdf.setFontSize(9);pdf.setTextColor(120,120,120);
@@ -753,8 +753,8 @@ apync function drawCover(pdf,e,pageW,pageH,margin){
     pdf.rect(margin,y,tableW,rowH,'F');
     pdf.setFont('helvetica','normal');pdf.setFontSize(11);pdf.setTextColor(110,110,110);
     pdf.text(r.l,labelX,y+rowH/2+1.2,{baseline:'middle'});
-    if(r.hi==='lager'){pdf.setFont('helvetica','bold');pdf.setFontSize(17);pdf.setTextColor(80,20,20);}
-    else if(r.hi==='gewicht'){pdf.setFont('helvetica','bold');pdf.setFontSize(15);pdf.setTextColor(160,20,20);}
+    if(r.hi==='lager'){pdf.setFont('helvetica','bold');pdf.setFontSize(17);pdf.setTextColor(20,20,20);}
+    else if(r.hi==='gewicht'){pdf.setFont('helvetica','bold');pdf.setFontSize(15);pdf.setTextColor(200,30,30);}
     else{pdf.setFont('helvetica','bold');pdf.setFontSize(12);pdf.setTextColor(30,30,30);}
     pdf.text(r.v,valueX,y+rowH/2+1.2,{baseline:'middle',maxWidth:tableW-(valueX-margin)-3});
     y+=rowH;
@@ -773,11 +773,11 @@ apync function drawCover(pdf,e,pageW,pageH,margin){
 
   // ===== Lieferschein- + Beilagenfotos im freien Bereich =====
   const blockY=pageH-38;            // Oberkante Aufnahme-Block
-  const galleryImgs=[...(e.beilageFull||[])];
+  const galleryImgs=[...(e.docFull||[]),...(e.beilageFull||[])];
   if(galleryImgs.length){
     y+=12;
     pdf.setFont('helvetica','bold');pdf.setFontSize(11);pdf.setTextColor(40,40,40);
-    pdf.text('Beilage',margin,y);y+=5;
+    pdf.text('Lieferschein & Beilage',margin,y);y+=5;
     const galTop=y, galBottom=blockY-6;
     const availH=galBottom-galTop, availW=pageW-margin*2;
     const gap=4, perRow=3;
@@ -793,7 +793,6 @@ apync function drawCover(pdf,e,pageW,pageH,margin){
         let w=img.width,h=img.height;
         const r=Math.min(cellW/w, cellH/h);
         w=w*r;h=h*r;
-        // Reihe horizontal zentrieren, Zelle vertikal zentrieren
         const rowW=itemsInRow*cellW+gap*(itemsInRow-1);
         const rowX=margin+(availW-rowW)/2;
         const cx=rowX+col*(cellW+gap)+(cellW-w)/2;
@@ -829,7 +828,7 @@ function buildBody(e,recips){
   L.push('');
   L.push('Beilage: '+(e.name||'—'));
   if(e.version)L.push('Version: '+e.version);
-  L.push('Støckzahl: '+(e.stueckzahl||'—'));
+  L.push('Stückzahl: '+(e.stueckzahl||'—'));
   if(e.et)L.push('ET: '+e.et);
   if(e.zeitung)L.push('Zeitung: '+e.zeitung);
   if(e.notiz){L.push('');L.push('Bemerkung: '+e.notiz);}
@@ -840,11 +839,15 @@ function buildBody(e,recips){
   return L.join('\n');
 }
 async function share(subject,body,files,recips){
-  // PDF herunterladen
+  // Bester Weg: natives Teilen-Menü (PDF wird direkt angehängt, z.B. Outlook-App)
+  if(navigator.canShare&&navigator.canShare({files})){
+    try{await navigator.share({title:subject,text:body,files});return true;}
+    catch(err){if(err.name==='AbortError')return false;}
+  }
+  // Fallback: PDF herunterladen + Outlook Web vorausgefüllt öffnen (PDF manuell anhängen)
   const f=files[0];const url=URL.createObjectURL(f);
   const a=document.createElement('a');a.href=url;a.download=f.name;a.click();
   setTimeout(()=>URL.revokeObjectURL(url),5000);
-  // Outlook Web öffnen (vorausgefüllt)
   const to=recips.join(';');
   const owUrl='https://outlook.office.com/mail/deeplink/compose?'
     +'to='+encodeURIComponent(to)
@@ -854,7 +857,7 @@ async function share(subject,body,files,recips){
   return await confirmSent();
 }
 function confirmSent(){return new Promise(res=>{setTimeout(()=>{
-  res(window.confirm('E-Mail gesendet?\n\nOK = Eintrag löschen · Abbrechen = behalten'));},1200);});}
+  res(window.confirm('Wurde die E-Mail gesendet?\n\nOK = Eintrag löschen · Abbrechen = behalten'));},900);});}
 
 /* ---- settings ---- */
 function renderMailList(){
@@ -870,7 +873,7 @@ function renderMailList(){
 }
 $('#addMail').addEventListener('click',()=>{
   const wrap=$('#mailList');const row=document.createElement('div');row.className='mailrow';
-  row.innerHTML<`<input type="email" value="" placeholder="adresse@firma.de"><button class="rm">×</button>`;
+  row.innerHTML=`<input type="email" value="" placeholder="adresse@firma.de"><button class="rm">×</button>`;
   row.querySelector('.rm').addEventListener('click',()=>row.remove());wrap.appendChild(row);});
 function openSheet(){
   renderMailList();
