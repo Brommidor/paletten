@@ -1,5 +1,5 @@
 // Minimaler Service Worker: App-Shell cachen (OCR/Senden brauchen Internet)
-const CACHE = 'paletten-v5';
+const CACHE = 'paletten-v6';
 const SHELL = ['./index.html', './manifest.json'];
 
 self.addEventListener('install', e => {
