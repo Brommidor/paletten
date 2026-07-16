@@ -374,6 +374,14 @@
     <label>Worker-URL (Texterkennung)</label>
     <input id="set-worker" type="url" inputmode="url" placeholder="https://…workers.dev" autocomplete="off">
   </div>
+  <div class="field" style="margin-top:14px">
+    <label>Versandart</label>
+    <div class="seg" id="sendmodeSeg" style="margin-bottom:6px">
+      <button type="button" data-mode="share" class="on">Teilen / App</button>
+      <button type="button" data-mode="outlook">Outlook Web</button>
+    </div>
+    <p class="hint" id="sendmodeHint" style="text-align:left;margin-top:0"></p>
+  </div>
   <button class="save-set" id="saveSettings">Speichern</button>
 </div>
 
@@ -394,6 +402,8 @@ const store={
   set worker(v){localStorage.setItem('pe_worker',v)},
   get username(){return localStorage.getItem('pe_username')||''},
   set username(v){localStorage.setItem('pe_username',v)},
+  get sendmode(){return localStorage.getItem('pe_sendmode')||'share'},
+  set sendmode(v){localStorage.setItem('pe_sendmode',v)},
 };
 
 /* ---- migrate old single email if present ---- */
@@ -839,12 +849,13 @@ function buildBody(e,recips){
   return L.join('\n');
 }
 async function share(subject,body,files,recips){
-  // Bester Weg: natives Teilen-Menü (PDF wird direkt angehängt, z.B. Outlook-App)
-  if(navigator.canShare&&navigator.canShare({files})){
+  // Modus "share": natives Teilen-Menü zuerst (PDF direkt angehängt, z.B. Outlook-App).
+  // Modus "outlook": Teilen-Menü überspringen, direkt Outlook Web öffnen.
+  if(store.sendmode!=='outlook' && navigator.canShare&&navigator.canShare({files})){
     try{await navigator.share({title:subject,text:body,files});return true;}
     catch(err){if(err.name==='AbortError')return false;}
   }
-  // Fallback: PDF herunterladen + Outlook Web vorausgefüllt öffnen (PDF manuell anhängen)
+  // Outlook-Web-Weg: PDF herunterladen + Outlook Web vorausgefüllt öffnen (PDF manuell anhängen)
   const f=files[0];const url=URL.createObjectURL(f);
   const a=document.createElement('a');a.href=url;a.download=f.name;a.click();
   setTimeout(()=>URL.revokeObjectURL(url),5000);
@@ -879,7 +890,15 @@ function openSheet(){
   renderMailList();
   $('#set-username').value=store.username;
   $('#set-subject').value=store.subject;$('#set-worker').value=store.worker;
+  setSendmodeUI(store.sendmode);
   $('#sheetBg').classList.add('on');$('#sheet').classList.add('on');}
+function setSendmodeUI(mode){
+  $$('#sendmodeSeg button').forEach(b=>b.classList.toggle('on',b.dataset.mode===mode));
+  $('#sendmodeHint').textContent = mode==='outlook'
+    ? 'Öffnet direkt Outlook Web (vorausgefüllt). Kein App-Dialog. PDF manuell anhängen.'
+    : 'Öffnet das Teilen-Menü. Outlook-App (falls installiert) hängt die PDF automatisch an.';
+}
+$$('#sendmodeSeg button').forEach(b=>b.addEventListener('click',()=>setSendmodeUI(b.dataset.mode)));
 function closeSheet(){$('#sheetBg').classList.remove('on');$('#sheet').classList.remove('on');}
 $('#gearBtn').addEventListener('click',openSheet);
 $('#sheetBg').addEventListener('click',closeSheet);
@@ -889,6 +908,8 @@ $('#saveSettings').addEventListener('click',()=>{
   store.subject=$('#set-subject').value.trim()||'Wareneingang – {name}';
   store.worker=$('#set-worker').value.trim();
   store.username=$('#set-username').value.trim();
+  const modeBtn=$('#sendmodeSeg button.on');
+  store.sendmode=modeBtn?modeBtn.dataset.mode:'share';
   closeSheet();toast('Einstellungen gespeichert.');});
 
 function esc(s){return (s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
